@@ -1,5 +1,6 @@
 import requests
 import pickle
+import streamlit as st  # Import Streamlit
 
 # Function to download pickle file from Google Drive
 def download_pickle_from_gdrive(url):
@@ -46,6 +47,10 @@ if df_file_path and similarity_file_path:
 else:
     print("Error: Could not download files.")
 
+# Streamlit interface
+st.header('Music Recommender System')
+music_list = df['song'].values  # Make sure df contains the correct data
+selected_music = st.selectbox("Type or select a song from the dropdown", music_list)
 
 
 def recommend(song):
