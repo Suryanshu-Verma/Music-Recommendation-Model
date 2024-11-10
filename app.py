@@ -35,44 +35,42 @@ similarity_file_path = download_pickle_from_gdrive(similarity_url)
 if df_file_path and similarity_file_path:
     try:
         with open(df_file_path, 'rb') as f:
-            print(f.read(10))  # Read first 10 bytes to check content
+            df = pickle.load(f)
         with open(similarity_file_path, 'rb') as f:
-            print(f.read(10))  # Read first 10 bytes to check content
-        
-        # Load the pickle files
-        df = pickle.load(open(df_file_path, 'rb'))
-        similarity = pickle.load(open(similarity_file_path, 'rb'))
+            similarity = pickle.load(f)
     except Exception as e:
-        print(f"Error while unpickling: {e}")
+        st.error(f"Error while unpickling: {e}")
 else:
-    print("Error: Could not download files.")
+    st.error("Error: Could not download files.")
 
 # Streamlit interface
 st.header('Music Recommender System')
-music_list = df['song'].values  # Make sure df contains the correct data
-selected_music = st.selectbox("Type or select a song from the dropdown", music_list)
 
+# Check if df is loaded correctly
+if 'song' in df.columns:
+    music_list = df['song'].values
+    selected_music = st.selectbox("Type or select a song from the dropdown", music_list)
 
-def recommend(song):
-    index = music[music['song'] == song].index[0]
-    distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
-    recommended_music_names = []
-    recommended_music_posters = []
-    for i in distances[1:11]:  # Top 10 recommendations
-        artist = music.iloc[i[0]].artist
-        recommended_music_posters.append(get_song_album_cover_url(music.iloc[i[0]].song, artist))
-        recommended_music_names.append(music.iloc[i[0]].song)
-    return recommended_music_names, recommended_music_posters
+    # Recommendation function
+    def recommend(song):
+        index = df[df['song'] == song].index[0]
+        distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
+        recommended_music_names = []
+        recommended_music_posters = []
+        for i in distances[1:11]:  # Top 10 recommendations
+            artist = df.iloc[i[0]].artist
+            recommended_music_names.append(df.iloc[i[0]].song)
+            # Placeholder for cover URL (replace with actual function if available)
+            recommended_music_posters.append("URL to album cover")  
+        return recommended_music_names, recommended_music_posters
 
-# Streamlit interface
-st.header('Music Recommender System')
-music_list = music['song'].values
-selected_music = st.selectbox("Type or select a song from the dropdown", music_list)
-
-if st.button('Show Recommendation'):
-    recommended_music_names, recommended_music_posters = recommend(selected_music)
-    cols = st.columns(10)
-    for i in range(10):
-        with cols[i]:
-            st.text(recommended_music_names[i])
-            st.image(recommended_music_posters[i])
+    # Display recommendations
+    if st.button('Show Recommendation'):
+        recommended_music_names, recommended_music_posters = recommend(selected_music)
+        cols = st.columns(10)
+        for i in range(10):
+            with cols[i]:
+                st.text(recommended_music_names[i])
+                st.image(recommended_music_posters[i], width=100)
+else:
+    st.error("The dataframe does not contain the 'song' column.")
