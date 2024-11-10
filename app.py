@@ -1,48 +1,34 @@
-import pickle
-import streamlit as st
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
 import requests
+import pickle
 
-CLIENT_ID = "b9ddf09b18e7422f8996873e37446473"
-CLIENT_SECRET = "c4b4ee4f1fc144f48754df477af4367b"
-
-# Initialize the Spotify client
-client_credentials_manager = SpotifyClientCredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-def get_song_album_cover_url(song_name, artist_name):
-    search_query = f"track:{song_name} artist:{artist_name}"
-    results = sp.search(q=search_query, type="track")
-    if results and results["tracks"]["items"]:
-        track = results["tracks"]["items"][0]
-        return track["album"]["images"][0]["url"]
-    else:
-        return "https://i.postimg.cc/0QNxYz4V/social.png"
-
+# Function to download pickle file from Google Drive
 def download_pickle_from_gdrive(url):
-    try:
-        file_id = url.split('/d/')[1].split('/')[0]  # Standard link format
-    except IndexError:
-        file_id = url.split('id=')[1]  # Fallback for non-standard format
+    # Convert Google Drive URL to a direct download URL
+    file_id = url.split('/d/')[1].split('/')[0]
     download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+
+    # Send request to download the file
     response = requests.get(download_url)
-    file_path = '/tmp/temp.pkl'
+    
+    # Define the temporary path for the pickle file in the /tmp directory
+    file_path = '/tmp/temp.pkl'  # The file will be used during the session
     with open(file_path, 'wb') as file:
         file.write(response.content)
+
     return file_path
 
-# Google Drive URLs
-df_url = "https://drive.google.com/file/d/1pDEio0oeXQqkt4o8RDzodGvv-TTWtjfV/view?usp=sharing"
-similarity_url = "https://drive.google.com/file/d/1ih8qAgx_VCNKuJaKmS7ma7PDJtfNLmnS/view?usp=sharing"
+# URLs for Google Drive pickle files (update these with your actual URLs)
+df_url = "https://drive.google.com/file/d/your_file_id_1/view?usp=sharing"
+similarity_url = "https://drive.google.com/file/d/your_file_id_2/view?usp=sharing"
 
-# Download pickle files
+# Download the pickle files
 df_file_path = download_pickle_from_gdrive(df_url)
 similarity_file_path = download_pickle_from_gdrive(similarity_url)
 
 # Load the pickle files
-music = pickle.load(open(df_file_path, 'rb'))
+df = pickle.load(open(df_file_path, 'rb'))
 similarity = pickle.load(open(similarity_file_path, 'rb'))
+
 
 def recommend(song):
     index = music[music['song'] == song].index[0]
