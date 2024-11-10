@@ -8,14 +8,19 @@ def download_pickle_from_gdrive(url):
     download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
 
     # Send request to download the file
-    response = requests.get(download_url)
+    response = requests.get(download_url, stream=True)
     
-    # Define the temporary path for the pickle file in the /tmp directory
-    file_path = '/tmp/temp.pkl'  # The file will be used during the session
-    with open(file_path, 'wb') as file:
-        file.write(response.content)
-
-    return file_path
+    # Check if the response is valid (200 OK)
+    if response.status_code == 200:
+        # Define the temporary path for the pickle file in the /tmp directory
+        file_path = '/tmp/temp.pkl'  # The file will be used during the session
+        with open(file_path, 'wb') as file:
+            file.write(response.content)
+        
+        return file_path
+    else:
+        print(f"Failed to download the file: {response.status_code}")
+        return None
 
 # URLs for Google Drive pickle files (update these with your actual URLs)
 df_url = "https://drive.google.com/file/d/your_file_id_1/view?usp=sharing"
@@ -25,9 +30,22 @@ similarity_url = "https://drive.google.com/file/d/your_file_id_2/view?usp=sharin
 df_file_path = download_pickle_from_gdrive(df_url)
 similarity_file_path = download_pickle_from_gdrive(similarity_url)
 
-# Load the pickle files
-df = pickle.load(open(df_file_path, 'rb'))
-similarity = pickle.load(open(similarity_file_path, 'rb'))
+# Verify the downloaded content before unpickling
+if df_file_path and similarity_file_path:
+    try:
+        with open(df_file_path, 'rb') as f:
+            print(f.read(10))  # Read first 10 bytes to check content
+        with open(similarity_file_path, 'rb') as f:
+            print(f.read(10))  # Read first 10 bytes to check content
+        
+        # Load the pickle files
+        df = pickle.load(open(df_file_path, 'rb'))
+        similarity = pickle.load(open(similarity_file_path, 'rb'))
+    except Exception as e:
+        print(f"Error while unpickling: {e}")
+else:
+    print("Error: Could not download files.")
+
 
 
 def recommend(song):
