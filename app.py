@@ -24,15 +24,20 @@ def get_song_album_cover_url(song_name, artist_name):
         return "https://i.postimg.cc/0QNxYz4V/social.png"
 
 def download_pickle_from_gdrive(url):
-    response = requests.get(url)
-    file_path = '/tmp/temp.pkl'
+    # Convert the Google Drive URL to a direct download link
+    file_id = url.split('/d/')[1].split('/')[0]
+    download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    response = requests.get(download_url)
+    
+    # Temporary path for Streamlit Cloud or adjust if running locally
+    file_path = '/tmp/temp.pkl'  # You can modify this path if needed for local testing
     with open(file_path, 'wb') as file:
         file.write(response.content)
     return file_path
 
-# URLs to your Google Drive files (replace with your actual URLs)
-df_url = "YOUR_GOOGLE_DRIVE_URL_FOR_DF"
-similarity_url = "YOUR_GOOGLE_DRIVE_URL_FOR_SIMILARITY"
+# URLs to your Google Drive files
+df_url = "https://drive.google.com/uc?export=download&id=1pDEio0oeXQqkt4o8RDzodGvv-TTWtjfV"
+similarity_url = "https://drive.google.com/uc?export=download&id=1ih8qAgx_VCNKuJaKmS7ma7PDJtfNLmnS"
 
 # Download the pickle files
 df_file_path = download_pickle_from_gdrive(df_url)
@@ -49,8 +54,6 @@ def recommend(song):
     recommended_music_posters = []
     for i in distances[1:11]:  # Top 10 recommendations
         artist = music.iloc[i[0]].artist
-        print(artist)
-        print(music.iloc[i[0]].song)
         recommended_music_posters.append(get_song_album_cover_url(music.iloc[i[0]].song, artist))
         recommended_music_names.append(music.iloc[i[0]].song)
 
@@ -65,36 +68,10 @@ selected_music = st.selectbox(
 
 if st.button('Show Recommendation'):
     recommended_music_names, recommended_music_posters = recommend(selected_music)
-    col1, col2, col3, col4, col5, col6, col7, col8, col9, col10 = st.columns(10)
-
-    with col1:
-        st.text(recommended_music_names[0])
-        st.image(recommended_music_posters[0])
-    with col2:
-        st.text(recommended_music_names[1])
-        st.image(recommended_music_posters[1])
-    with col3:
-        st.text(recommended_music_names[2])
-        st.image(recommended_music_posters[2])
-    with col4:
-        st.text(recommended_music_names[3])
-        st.image(recommended_music_posters[3])
-    with col5:
-        st.text(recommended_music_names[4])
-        st.image(recommended_music_posters[4])
-    with col6:
-        st.text(recommended_music_names[5])
-        st.image(recommended_music_posters[5])
-    with col7:
-        st.text(recommended_music_names[6])
-        st.image(recommended_music_posters[6])
-    with col8:
-        st.text(recommended_music_names[7])
-        st.image(recommended_music_posters[7])
-    with col9:
-        st.text(recommended_music_names[8])
-        st.image(recommended_music_posters[8])
-    with col10:
-        st.text(recommended_music_names[9])
-        st.image(recommended_music_posters[9])
-s
+    
+    # Display recommendations in columns
+    cols = st.columns(10)
+    for i in range(10):
+        with cols[i]:
+            st.text(recommended_music_names[i])
+            st.image(recommended_music_posters[i])
