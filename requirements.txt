@@ -1,6 +1,6 @@
-streamlit==1.24.1
-spotipy==2.22.1
-requests==2.31.0
+streamlit
+spotipy
+requests
 matplotlib
 seaborn
 urlextract
