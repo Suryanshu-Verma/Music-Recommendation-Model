@@ -1,37 +1,31 @@
 import requests
 import pickle
-import streamlit as st  # Import Streamlit
+import streamlit as st
 
 # Function to download pickle file from Google Drive
 def download_pickle_from_gdrive(url):
-    # Convert Google Drive URL to a direct download URL
     file_id = url.split('/d/')[1].split('/')[0]
     download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
 
-    # Send request to download the file
     response = requests.get(download_url, stream=True)
-    
-    # Check if the response is valid (200 OK)
     if response.status_code == 200:
-        # Define the temporary path for the pickle file in the /tmp directory
-        file_path = '/tmp/temp.pkl'  # The file will be used during the session
+        file_path = '/tmp/temp.pkl'
         with open(file_path, 'wb') as file:
             file.write(response.content)
-        
         return file_path
     else:
-        print(f"Failed to download the file: {response.status_code}")
+        st.error(f"Failed to download file from Google Drive. Status code: {response.status_code}")
         return None
 
-# URLs for Google Drive pickle files (update these with your actual URLs)
-df_url = "https://drive.google.com/file/d/your_file_id_1/view?usp=sharing"
-similarity_url = "https://drive.google.com/file/d/your_file_id_2/view?usp=sharing"
+# Updated URLs for Google Drive pickle files
+df_url = "https://drive.google.com/file/d/1pDEio0oeXQqkt4o8RDzodGvv-TTWtjfV/view?usp=sharing"
+similarity_url = "https://drive.google.com/file/d/1ih8qAgx_VCNKuJaKmS7ma7PDJtfNLmnS/view?usp=sharing"
 
 # Download the pickle files
 df_file_path = download_pickle_from_gdrive(df_url)
 similarity_file_path = download_pickle_from_gdrive(similarity_url)
 
-# Verify the downloaded content before unpickling
+# Load data if downloads were successful
 if df_file_path and similarity_file_path:
     try:
         with open(df_file_path, 'rb') as f:
@@ -43,11 +37,11 @@ if df_file_path and similarity_file_path:
 else:
     st.error("Error: Could not download files.")
 
-# Streamlit interface
+# Streamlit interface setup
 st.header('Music Recommender System')
 
-# Check if df is loaded correctly
-if 'song' in df.columns:
+# Proceed only if 'df' is loaded successfully
+if 'df' in locals() and 'song' in df.columns:
     music_list = df['song'].values
     selected_music = st.selectbox("Type or select a song from the dropdown", music_list)
 
@@ -57,14 +51,13 @@ if 'song' in df.columns:
         distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
         recommended_music_names = []
         recommended_music_posters = []
-        for i in distances[1:11]:  # Top 10 recommendations
+        for i in distances[1:11]:
             artist = df.iloc[i[0]].artist
             recommended_music_names.append(df.iloc[i[0]].song)
-            # Placeholder for cover URL (replace with actual function if available)
-            recommended_music_posters.append("URL to album cover")  
+            recommended_music_posters.append("URL to album cover")  # Placeholder URL
         return recommended_music_names, recommended_music_posters
 
-    # Display recommendations
+    # Show recommendations if a song is selected
     if st.button('Show Recommendation'):
         recommended_music_names, recommended_music_posters = recommend(selected_music)
         cols = st.columns(10)
@@ -73,4 +66,4 @@ if 'song' in df.columns:
                 st.text(recommended_music_names[i])
                 st.image(recommended_music_posters[i], width=100)
 else:
-    st.error("The dataframe does not contain the 'song' column.")
+    st.error("The data could not be loaded or is missing the 'song' column.")
