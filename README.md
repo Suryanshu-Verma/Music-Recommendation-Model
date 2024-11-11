@@ -9,7 +9,7 @@ A Streamlit-based web application designed to recommend music based on song simi
 ## How to Use
 
 ### Using the Music Recommendation Model:
-1. **Open the web app**.
+1. **Download the main Jupyter notebook and app python files and run and connect it to streamlit**.
 2. **Select a song** from the dropdown list of available tracks.
 3. Click on **Show Recommendation**.
 4. View your personalized music recommendations along with album cover art fetched from Spotify.
