@@ -42,7 +42,7 @@ def download_pickle_from_gdrive(url):
         if content_preview.startswith(b'<'):
             st.error("Downloaded content appears to be HTML, not a pickle file. Check your Google Drive URL.")
             return None
- return file_path
+return file_path
 
 
 # Google Drive URLs for your files
