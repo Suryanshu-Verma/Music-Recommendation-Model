@@ -18,7 +18,7 @@ A Streamlit-based web application designed to recommend music based on song simi
 
 ## Tools and Libraries
 - **Streamlit**: For creating an interactive and engaging user interface.
-- **Spotipy**: To access the Spotify API for song data and album images.
+- **Spotify**: To access the Spotify API for song data and album images.
 - **Pandas**: For data manipulation and management.
 - **Numpy**: To handle numerical operations.
 - **Scikit-learn**: For computing song similarities.
