@@ -30,10 +30,20 @@ def download_pickle_from_gdrive(url):
     if response.status_code != 200:
         st.error("Failed to download the file. Please check the URL or your internet connection.")
         return None
+
     file_path = '/tmp/temp.pkl'
     with open(file_path, 'wb') as file:
         file.write(response.content)
-    return file_path
+    
+    # Check the first few characters of the content to see if it's correct
+    with open(file_path, 'rb') as file:
+        content_preview = file.read(100)  # Read the first 100 bytes
+        print(content_preview)  # This is for debugging in your local environment
+        if content_preview.startswith(b'<'):
+            st.error("Downloaded content appears to be HTML, not a pickle file. Check your Google Drive URL.")
+            return None
+ return file_path
+
 
 # Google Drive URLs for your files
 df_url  = "https://drive.google.com/uc?export=download&id=1pDEio0oeXQqkt4o8RDzodGvv-TTWtjfV"
