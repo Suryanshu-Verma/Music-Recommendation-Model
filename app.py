@@ -48,8 +48,8 @@ def download_pickle_from_gdrive(url):
 
 
 # Google Drive URLs for your files
-df_url  = "https://maitadmin-my.sharepoint.com/personal/btech_le_243_ece_mait_ac_in/_layouts/15/download.aspx?SourceUrl=/personal/btech_le_243_ece_mait_ac_in/EUOjw6bHFZVAlT2kPMK-O60BNr-pSM41zpQyJ0NTovHNfQ"
-similarity_url = "https://maitadmin-my.sharepoint.com/personal/btech_le_243_ece_mait_ac_in/_layouts/15/download.aspx?SourceUrl=/personal/btech_le_243_ece_mait_ac_in/EZHYgYGhU85EgVi-LHnuB-sBVD-dhQ0lyJS5VDkTFpO4aQ"
+df_url  = "https://www.dropbox.com/scl/fi/bscl4su369vjj7jmwva4e/df.pkl?rlkey=ze31yeegedeh7b33trdtaxi23&st=c4cpreq5&dl=1"
+similarity_url = "https://www.dropbox.com/scl/fi/vl5uzf0c7ljje6italrc4/similarities.pkl?rlkey=v8ho4yvdw09j2n9ah29mum3wy&dl=1"
 
 # Download and load the pickle files
 df_file_path = download_pickle_from_gdrive(df_url)
